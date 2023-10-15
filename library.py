@@ -114,3 +114,35 @@ class CustomMappingTransformer(BaseEstimator, TransformerMixin):
     #self.fit(X,y)
     result = self.transform(X)
     return result
+
+class CustomSigma3Transformer(BaseEstimator, TransformerMixin):
+  def __init__(self, target_column):
+    self.target_column = target_column
+    self.lower_bound = None
+    self.upper_bound = None
+
+  def fit(self, X):
+      assert isinstance(X, pd.core.frame.DataFrame), f'{self.__class__.__name__}.fit expected Dataframe but got {type(X)} instead.'
+      assert self.target_column in X.columns, f'{self.__class__.__name__}.fit unknown column "{self.target_column}"'
+
+      mean = X[self.target_column].mean()
+      std = X[self.target_column].std()
+
+      self.lower_bound = mean - 3*std
+      self.upper_bound = mean + 3*std
+
+      return self
+
+  def transform(self, X):
+      assert isinstance(X, pd.core.frame.DataFrame), f'{self.__class__.__name__}.transform expected Dataframe but got {type(X)} instead.'
+      assert self.target_column in X.columns, f'{self.__class__.__name__}.transform unknown column "{self.target_column}"'
+      assert self.lower_bound is not None and self.upper_bound is not None, f'{self.__class__.__name__} not fitted yet'
+
+      # Clip values outside the 3-sigma range and reset the index
+      X_ = X.copy()
+      X_[self.target_column] = X_[self.target_column].clip(self.lower_bound, self.upper_bound)
+      return X_
+
+  def fit_transform(self, X):
+      self.fit(X)
+      return self.transform(X)
