@@ -143,6 +143,45 @@ class CustomSigma3Transformer(BaseEstimator, TransformerMixin):
       X_[self.target_column] = X_[self.target_column].clip(self.lower_bound, self.upper_bound)
       return X_
 
+class CustomTukeyTransformer(BaseEstimator, TransformerMixin):
+  def __init__(self, target_column, fence='outer'):
+        assert fence in ['inner', 'outer'], f'Invalid fence type: {fence}. Use "inner" or "outer".'
+        self.target_column = target_column
+        self.fence = fence
+        self.lower_bound = None
+        self.upper_bound = None
+
+  def fit(self, X, y=None):
+      assert isinstance(X, pd.core.frame.DataFrame), f'{self.__class__.__name__}.fit expected Dataframe but got {type(X)} instead.'
+      assert self.target_column in X.columns, f'{self.__class__.__name__}.fit unknown column "{self.target_column}"'
+
+      Q1 = X[self.target_column].quantile(0.25)
+      Q3 = X[self.target_column].quantile(0.75)
+      IQR = Q3 - Q1
+
+      if self.fence == 'inner':
+          self.lower_bound = Q1 - 1.5 * IQR
+          self.upper_bound = Q3 + 1.5 * IQR
+      elif self.fence == 'outer':
+          self.lower_bound = Q1 - 3.0 * IQR
+          self.upper_bound = Q3 + 3.0 * IQR
+
+      return self
+
+  def transform(self, X):
+      assert isinstance(X, pd.core.frame.DataFrame), f'{self.__class__.__name__}.transform expected Dataframe but got {type(X)} instead.'
+      assert self.target_column in X.columns, f'{self.__class__.__name__}.transform unknown column "{self.target_column}"'
+      assert self.lower_bound is not None and self.upper_bound is not None, f'{self.__class__.__name__} not fitted yet'
+
+      # Clip values outside the Tukey fence range and reset the index
+      X_ = X.copy()
+      X_[self.target_column] = X_[self.target_column].clip(self.lower_bound, self.upper_bound)
+      return X_
+
+  def fit_transform(self, X, y=None):
+      self.fit(X, y)
+      return self.transform(X)
+
   def fit_transform(self, X):
       self.fit(X)
       return self.transform(X)
