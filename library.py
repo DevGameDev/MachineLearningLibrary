@@ -143,6 +143,10 @@ class CustomSigma3Transformer(BaseEstimator, TransformerMixin):
       X_[self.target_column] = X_[self.target_column].clip(self.lower_bound, self.upper_bound)
       return X_
 
+  def fit_transform(self, X):
+      self.fit(X)
+      return self.transform(X)
+
 class CustomTukeyTransformer(BaseEstimator, TransformerMixin):
   def __init__(self, target_column, fence='outer'):
         assert fence in ['inner', 'outer'], f'Invalid fence type: {fence}. Use "inner" or "outer".'
@@ -182,6 +186,3 @@ class CustomTukeyTransformer(BaseEstimator, TransformerMixin):
       self.fit(X, y)
       return self.transform(X)
 
-  def fit_transform(self, X):
-      self.fit(X)
-      return self.transform(X)
