@@ -186,3 +186,29 @@ class CustomTukeyTransformer(BaseEstimator, TransformerMixin):
       self.fit(X, y)
       return self.transform(X)
 
+class CustomRobustTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, column):
+        self.target_column = column
+        self.median = None
+        self.iqr = None
+
+    def fit(self, X, y=None):
+        column_data = X[self.target_column].dropna()
+        q1 = X[self.target_column].quantile(0.25)
+        q3 = X[self.target_column].quantile(0.75)
+
+        self.median = np.median(column_data)
+        self.iqr = q3 - q1
+
+        return self
+
+    def transform(self, X):
+        X_copy = X.copy()
+
+        X_copy[self.target_column] = (X[self.target_column] - self.median) / self.iqr
+        return X_copy
+
+    def fit_transform(self, X, y=None):
+        """Fit to data, then transform it."""
+        return self.fit(X, y).transform(X)
+
