@@ -7,6 +7,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import KNNImputer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import f1_score
+from sklearn.model_selection import train_test_split
 
 import subprocess
 import sys
