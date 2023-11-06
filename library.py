@@ -34,17 +34,6 @@ def dataset_setup(original_table, label_column_name:str, the_transformer, rs, ts
     
     return x_train_numpy, x_test_numpy, y_train_numpy, y_test_numpy
 
-def titanic_setup(titanic_table, transformer=titanic_transformer, rs=titanic_variance_based_split, ts=.2):
-  return dataset_setup(titanic_table, 'Survived', transformer, rs=rs, ts=ts)
-
-def customer_setup(customer_table, transformer=customer_transformer, rs=customer_variance_based_split, ts=.2):
-  return dataset_setup(customer_table, 'Rating', transformer, rs=rs, ts=ts)
-class CustomOHETransformer(BaseEstimator, TransformerMixin):
-  def __init__(self, target_column, dummy_na=False, drop_first=False):
-    self.target_column = target_column
-    self.dummy_na = dummy_na
-    self.drop_first = drop_first
-
   def fit(self, X, y = None):
     print(f"\nWarning: {self.__class__.__name__}.fit does nothing.\n")
     return self
@@ -295,3 +284,15 @@ customer_transformer = Pipeline(steps=[
     ('scale_time spent', CustomRobustTransformer('Time Spent')), #from 5
     ('impute', KNNImputer(n_neighbors=5, weights="uniform", add_indicator=False)),
     ], verbose=True)
+
+
+def titanic_setup(titanic_table, transformer=titanic_transformer, rs=titanic_variance_based_split, ts=.2):
+  return dataset_setup(titanic_table, 'Survived', transformer, rs=rs, ts=ts)
+
+def customer_setup(customer_table, transformer=customer_transformer, rs=customer_variance_based_split, ts=.2):
+  return dataset_setup(customer_table, 'Rating', transformer, rs=rs, ts=ts)
+class CustomOHETransformer(BaseEstimator, TransformerMixin):
+  def __init__(self, target_column, dummy_na=False, drop_first=False):
+    self.target_column = target_column
+    self.dummy_na = dummy_na
+    self.drop_first = drop_first
