@@ -10,6 +10,7 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from sklearn.linear_model import LogisticRegressionCV
+from sklearn.model_selection import HalvingGridSearchCV
 
 import subprocess
 import sys
