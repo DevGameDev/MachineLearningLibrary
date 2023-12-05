@@ -1,3 +1,4 @@
+Plot,Subplot,Species,Light_ISF,Core,Soil,Adult,AMF,NSC,Census,Outcome
 1,C,Acer saccharum,0.106,2017,Prunus serotina,I,22.0,12.15,4,1.0
 1,C,Quercus alba,0.106,2017,Quercus rubra,970,15.82,19.29,33,0.0
 1,C,Quercus rubra,0.106,2017,Prunus serotina,J,24.45,15.01,18,1.0
